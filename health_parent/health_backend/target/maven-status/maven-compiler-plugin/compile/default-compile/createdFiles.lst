@@ -1,0 +1,9 @@
+com\ydl\controller\CheckItemController.class
+com\ydl\controller\OrderSettingController.class
+com\ydl\controller\CheckGroupController.class
+com\ydl\controller\PermissionController.class
+com\ydl\security\SpringSecurityUserServiceImpl.class
+com\ydl\controller\ReportController.class
+com\ydl\controller\UserController.class
+com\ydl\controller\SetMealController.class
+com\ydl\controller\RoleController.class

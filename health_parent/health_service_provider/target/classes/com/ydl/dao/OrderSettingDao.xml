@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.OrderSettingDao">
+
+    <insert id="add" parameterType="com.ydl.pojo.OrderSetting">
+        insert into t_ordersetting(orderDate, number)
+        values (#{orderDate}, #{number});
+    </insert>
+
+    <update id="editNumberByDate" parameterType="com.ydl.pojo.OrderSetting">
+        update t_ordersetting
+        set number = #{number}
+        where orderDate = #{orderDate}
+    </update>
+
+    <!--根据预约日期更新已预约人数-->
+    <update id="editReservationsByOrderDate" parameterType="com.ydl.pojo.OrderSetting">
+        update t_ordersetting
+        set reservations = #{reservations}
+        where orderDate = #{orderDate}
+    </update>
+
+    <select id="findOrderSettingByDate" parameterType="map" resultType="com.ydl.pojo.OrderSettingVO">
+        select id, orderDate, number, reservations
+        from t_ordersetting
+        where orderDate between #{begin} and #{end}
+    </select>
+    <select id="findByDate" resultType="com.ydl.pojo.OrderSetting" parameterType="date">
+        select id, orderDate, number, reservations
+        from t_ordersetting
+        where orderDate = #{date}
+    </select>
+    <select id="findOrderSettingByDatePro" parameterType="string" resultType="com.ydl.pojo.OrderSettingVO">
+        select id, orderDate, number, reservations
+        from t_ordersetting
+        where orderDate like concat(#{date}, '%')
+    </select>
+    <select id="findByOrderDate" parameterType="string" resultType="com.ydl.pojo.OrderSetting">
+        select id, orderDate, number, reservations
+        from t_ordersetting
+        where orderDate = #{orderDate}
+    </select>
+
+    <select id="findOrdersPage" parameterType="string" resultType="com.ydl.pojo.OrderSettingListVO">
+        SELECT o.id AS id,
+        o.orderDate AS orderDate,
+        o.orderAddress AS orderAddress,
+        n.`name` AS `name`,
+        n.phoneNumber AS phoneNumber,
+        o.orderType AS orderType,
+        o.orderStatus AS orderStatus
+        FROM t_order o
+        LEFT JOIN t_member n ON o.member_id = n.id
+        <if test="queryString != null and queryString.length > 0">
+            where o.id like concat('%',#{queryString},'%')
+            or n.name like concat('%',#{queryString},'%')
+            or n.phoneNumber like concat('%',#{queryString},'%')
+        </if>
+    </select>
+</mapper>

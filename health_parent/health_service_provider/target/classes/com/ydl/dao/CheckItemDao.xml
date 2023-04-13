@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.CheckItemDao">
+
+    <resultMap id="baseCheckItemResultMap" type="com.ydl.pojo.CheckItem">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="price" column="price"/>
+        <result property="type" column="type"/>
+        <result property="attention" column="attention"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <!--插入检查项数据-->
+    <insert id="add" parameterType="com.ydl.pojo.CheckItem">
+        insert into t_checkitem(code, name, sex, age, price, type, remark, attention)
+        values (#{code}, #{name}, #{sex}, #{age}, #{price}, #{type}, #{remark}, #{attention})
+    </insert>
+    <update id="update" parameterType="com.ydl.pojo.CheckItem">
+        update t_checkitem
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="integer">
+        delete
+        from t_checkitem
+        where id = #{id}
+    </delete>
+
+    <!--分页查找-->
+    <select id="queryByConditionPage" parameterType="string" resultType="com.ydl.pojo.CheckItem">
+        select id,code, name, sex, age, price, type, remark, attention from t_checkitem
+        <if test="queryString != null and queryString.length > 0">
+            where code like concat('%',#{queryString},'%') or name like concat('%',#{queryString},'%')
+        </if>
+    </select>
+    <select id="findCountByCheckItemId" resultType="long">
+        select count(1)
+        from t_checkgroup_checkitem
+        where checkitem_id = #{id}
+    </select>
+    <select id="queryById" parameterType="integer" resultType="com.ydl.pojo.CheckItem">
+        select id,
+               code,
+               name,
+               sex,
+               age,
+               price,
+               type,
+               remark,
+               attention
+        from t_checkitem
+        where id = #{id}
+    </select>
+    <select id="queryAll" resultType="com.ydl.pojo.CheckItem">
+        select id,
+               code,
+               name,
+               sex,
+               age,
+               price,
+               type,
+               remark,
+               attention
+        from t_checkitem
+    </select>
+
+    <select id="findCheckItemByCheckGroupId" resultMap="baseCheckItemResultMap" parameterType="int">
+        select id,
+               code,
+               name,
+               sex,
+               age,
+               price,
+               type,
+               remark,
+               attention
+        from t_checkitem
+        where id in (
+            select checkitem_id from t_checkgroup_checkitem where checkgroup_id = #{id}
+        )
+    </select>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.UserDao">
+
+    <select id="findByUsername" parameterType="string" resultType="com.ydl.pojo.User">
+        select id,
+               birthday,
+               gender,
+               username,
+               password,
+               remark,
+               station,
+               telephone
+        from t_user
+        where username = #{username}
+    </select>
+
+    <select id="findByCase" parameterType="string" resultType="com.ydl.pojo.User">
+        select id,
+        birthday,
+        gender,
+        username,
+        password,
+        remark,
+        station,
+        telephone
+        from t_user
+        <if test="username != null and username.length > 0">
+            where username = #{username}
+        </if>
+    </select>
+</mapper>

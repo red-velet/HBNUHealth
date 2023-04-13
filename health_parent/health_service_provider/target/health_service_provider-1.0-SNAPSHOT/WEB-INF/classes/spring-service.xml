@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://dubbo.apache.org/schema/dubbo
+						http://dubbo.apache.org/schema/dubbo/dubbo.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+    <!--指定暴露服务的端口，如果不指定默认为20880-->
+    <dubbo:protocol name="dubbo" port="20887"/>
+    <!-- 指定应用名称 -->
+    <dubbo:application name="health_service_provider">
+        <dubbo:parameter key="qos.port" value="44446"/>
+    </dubbo:application>
+    <!--指定服务注册中心地址-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+    <!--批量扫描，发布服务-->
+    <dubbo:annotation package="com.ydl.service.impl"/>
+
+    <!-- freemarker模板引擎设置 -->
+    <!--加载配置文件-->
+    <context:property-placeholder location="classpath:freemarker.properties"/>
+
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <!--指定模板文件所在目录-->
+        <property name="templateLoaderPath" value="/ftl/"/>
+        <!--指定字符集-->
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+</beans>

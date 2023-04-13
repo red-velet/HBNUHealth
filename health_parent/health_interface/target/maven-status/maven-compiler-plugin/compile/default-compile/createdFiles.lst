@@ -1,0 +1,11 @@
+com\ydl\service\SetMealService.class
+com\ydl\service\OrderSettingService.class
+com\ydl\service\CheckItemService.class
+com\ydl\service\MemberService.class
+com\ydl\service\UserService.class
+com\ydl\service\OrderService.class
+com\ydl\service\RoleService.class
+com\ydl\service\CheckGroupService.class
+com\ydl\service\PermissionService.class
+com\ydl\service\QiNiuService.class
+com\ydl\service\ReportService.class

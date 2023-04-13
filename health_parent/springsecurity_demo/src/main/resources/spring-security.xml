@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		 http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		 http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--
+        http：用于定义相关权限控制
+        auto-config：是否自动配置
+                        设置为true时框架会提供默认的一些配置，例如提供默认的登录页面、登出处理等
+                        设置为false时需要显示提供登录表单配置，否则会报错
+        use-expressions：用于指定intercept-url中的access属性是否使用表达式
+    -->
+
+    <security:http pattern="/image/*" security="none"/>
+    <security:http pattern="/login.html" security="none"/>
+    <security:http auto-config="true" use-expressions="true">
+        <!--
+            intercept-url：定义一个拦截规则
+            pattern：对哪些url进行权限控制
+            access：在请求对应的URL时需要什么权限，默认配置时它应该是一个以逗号分隔的角色列表，
+                  请求的用户只需拥有其中的一个角色就能成功访问对应的URL
+        -->
+        <security:intercept-url pattern="/favicon.ico"/>
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')"/>
+
+        <security:form-login login-page="/login.html"
+                             username-parameter="username"
+                             password-parameter="password"
+                             login-processing-url="/login.do"
+                             default-target-url="/pages/success.html"
+                             authentication-failure-url="/login.html"/>
+
+        <security:csrf disabled="true"/>
+    </security:http>
+
+
+    <!--
+        authentication-manager：认证管理器，用于处理认证操作
+    -->
+    <security:authentication-manager>
+        <!--
+            authentication-provider：认证提供者，执行具体的认证逻辑
+        -->
+        <security:authentication-provider>
+            <!--
+                user-service：用于获取用户信息，提供给authentication-provider进行认证
+            -->
+            <security:user-service>
+                <!--
+                    user：定义用户信息，可以指定用户名、密码、角色，后期可以改为从数据库查询用户信息
+                  {noop}：表示当前使用的密码为明文
+                -->
+                <security:user name="admin" password="{noop}admin" authorities="ROLE_ADMIN"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+</beans>

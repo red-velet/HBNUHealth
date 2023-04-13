@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";font-size:14px;}
+        #l-map{height:100%;width:100%;}
+        #r-result{width:100%;}
+    </style>
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=1B7db771KoafrLuRGbqQQiKOtu64AWC2"></script>
+<!--    <title>关键字输入提示词条</title>-->
+</head>
+<body onload="init()">
+<div id="r-result">请输入要查询的地址:
+    <input type="text" id="suggestId" size="20" value="百度" style="width:150px;" />
+    <input type="button" onclick="add_control();" value="确定添加" />
+</div>
+<div id="l-map"></div>
+<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+</body>
+</html>
+<script type="text/javascript">
+
+    var map = new BMap.Map("l-map");
+    map.enableScrollWheelZoom(true);
+    //建立一个自动完成的对象
+    var ac = new BMap.Autocomplete({"input" : "suggestId","location" : map});
+
+    //根据浏览器定位当前位置
+    function init() {
+        var geolocation = new BMap.Geolocation();
+        geolocation.getCurrentPosition(function(r){
+            if(this.getStatus() == BMAP_STATUS_SUCCESS){
+                var mk = new BMap.Marker(r.point);
+                // map.addOverlay(mk);
+                map.panTo(r.point);
+                // 初始化地图,设置城市和地图级别。
+                map.centerAndZoom(r.point,12);
+                // alert('您的位置：'+r.point.lng+','+r.point.lat);
+            }
+            else {
+                // alert('failed'+this.getStatus());
+            }
+        });
+    }
+    //最终搜索的地址
+    var myValue;
+    //查询到的经纬度
+    var myGridn;
+    function add_control() {
+
+        /*$.ajax({
+            type:"POST",
+            url:"http://localhost:82/address/findAll.do",
+            // data:JSON.stringify(userList),
+            async: false,
+            contentType:"application/json;charset=utf-8",
+            success: function (data) {
+                for(var x=0;x<data.gridnMaps.length;x++){
+                    adds.push(new BMap.Point(data.gridnMaps[x].lng,data.gridnMaps[x].lat));
+                    addNames.push(data.nameMaps[x].addressName);
+                }
+            }
+        });*/
+    }
+    
+    // 百度地图API功能
+    function G(id) {
+        return document.getElementById(id);
+    }
+
+
+    ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+        var str = "";
+        var _value = e.fromitem.value;
+        var value = "";
+        if (e.fromitem.index > -1) {
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }
+        str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+        value = "";
+        if (e.toitem.index > -1) {
+            _value = e.toitem.value;
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }
+        str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+        G("searchResultPanel").innerHTML = str;
+    });
+
+    ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+        var _value = e.item.value;
+        myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+
+        setPlace();
+    });
+
+    function setPlace(){
+        myGridn=[];
+        map.clearOverlays();    //清除地图上所有覆盖物
+        function myFun(){
+            var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+            map.centerAndZoom(pp, 15);
+            map.addOverlay(new BMap.Marker(pp));    //添加标注
+            // alert(pp.lng+":"+pp.lat);
+            myGridn.push({"lng":pp.lng,"lat":pp.lat});
+            alert(myGridn);
+        }
+        var local = new BMap.LocalSearch(map, { //智能搜索
+            onSearchComplete: myFun
+        });
+        local.search(myValue);
+    }
+</script>

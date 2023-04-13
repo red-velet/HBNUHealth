@@ -1,0 +1,13 @@
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:32 +0800] "GET / HTTP/1.1" 302 - http-bio-89-exec-1 59
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:32 +0800] "GET /login.html HTTP/1.1" 200 407 http-bio-89-exec-3 3
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:38 +0800] "POST /login.do HTTP/1.1" 302 - http-bio-89-exec-4 64
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:38 +0800] "GET / HTTP/1.1" 200 153 http-bio-89-exec-5 2
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:46 +0800] "POST /login.do HTTP/1.1" 302 - http-bio-89-exec-6 1
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:46 +0800] "GET /pages/success.html HTTP/1.1" 200 144 http-bio-89-exec-7 2
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:56 +0800] "POST /login.do HTTP/1.1" 302 - http-bio-89-exec-8 2
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:56 +0800] "GET /pages/success.html HTTP/1.1" 200 144 http-bio-89-exec-9 2
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:57 +0800] "GET /pages/success.html HTTP/1.1" 200 144 http-bio-89-exec-10 0
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:58 +0800] "GET /pages/success.html HTTP/1.1" 200 144 http-bio-89-exec-10 1
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:28:58 +0800] "GET /pages/success.html HTTP/1.1" 200 144 http-bio-89-exec-10 1
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:29:04 +0800] "GET /pages/success.html HTTP/1.1" 200 144 http-bio-89-exec-10 1
+0:0:0:0:0:0:0:1 - - [04/Mar/2023:10:29:08 +0800] "GET / HTTP/1.1" 200 153 http-bio-89-exec-10 1

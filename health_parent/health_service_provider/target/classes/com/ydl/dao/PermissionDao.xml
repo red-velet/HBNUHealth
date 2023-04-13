@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.PermissionDao">
+
+    <select id="findByRoleId" parameterType="integer" resultType="com.ydl.pojo.Permission">
+        select id, name, keyword, description
+        from t_permission
+        where id in (
+            select permission_id
+            from t_role_permission
+            where role_id = #{id}
+        )
+    </select>
+    <select id="findAll" parameterType="string" resultType="com.ydl.pojo.Permission">
+        select id, name, keyword, description
+        from t_permission
+        <if test="queryString != null and queryString.length > 0">
+            where name like concat('%',#{queryString},'%')
+        </if>
+    </select>
+</mapper>

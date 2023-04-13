@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.SetMealDao">
+    <resultMap id="baseSetMealResultMap" type="com.ydl.pojo.Setmeal">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="helpCode" column="helpCode"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="price" column="price"/>
+        <result property="remark" column="remark"/>
+        <result property="img" column="img"/>
+    </resultMap>
+
+    <resultMap id="findByIdProMap"
+               type="com.ydl.pojo.Setmeal"
+               extends="baseSetMealResultMap">
+        <collection property="checkGroups"
+                    column="id"
+                    ofType="com.ydl.pojo.CheckGroup"
+                    select="com.ydl.dao.CheckGroupDao.findCheckGroupBySetMealId"/>
+
+    </resultMap>
+    <!--向t_setmeal表添加一条数据-->
+    <insert id="add" parameterType="com.ydl.pojo.Setmeal">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_setmeal(name,code,helpCode,sex, age, price,remark, attention,img)
+        values (#{name},#{code},#{helpCode},#{sex},#{age},#{price},#{remark}, #{attention},#{img})
+    </insert>
+
+    <insert id="setSetMealAndCheckGroup" parameterType="map">
+        insert into t_setmeal_checkgroup(setmeal_id, checkgroup_id)
+        values (#{setmealid}, #{checkgroupid})
+    </insert>
+
+    <update id="update">
+        update t_setmeal
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="img != null">
+                img = #{img},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAssociation" parameterType="integer">
+        delete
+        from t_setmeal_checkgroup
+        where setmeal_id = #{id}
+    </delete>
+
+    <delete id="delete" parameterType="integer">
+        delete
+        from t_setmeal
+        where id = #{id}
+    </delete>
+
+    <select id="queryByConditionPage" resultType="com.ydl.pojo.Setmeal">
+        select id,
+        name,
+        code,
+        helpCode,
+        sex,
+        age,
+        price,
+        remark,
+        attention,
+        img
+        from t_setmeal
+        <if test="queryString != null and queryString.length > 0">
+            where code like concat('%',#{queryString},'%') or name like concat('%',#{queryString},'%')
+        </if>
+    </select>
+    <select id="findById" resultType="com.ydl.pojo.Setmeal" parameterType="integer">
+        select id,
+               name,
+               code,
+               helpCode,
+               sex,
+               age,
+               price,
+               remark,
+               attention,
+               img
+        from t_setmeal
+        where id = #{id}
+    </select>
+    <select id="findCheckGroupIdBySetMealId" parameterType="integer" resultType="java.lang.Integer">
+        select checkgroup_id
+        from t_setmeal_checkgroup
+        where setmeal_id = #{id}
+    </select>
+    <select id="getAll" resultType="com.ydl.pojo.Setmeal">
+        select id,
+               name,
+               code,
+               helpCode,
+               sex,
+               age,
+               price,
+               remark,
+               attention,
+               img
+        from t_setmeal
+    </select>
+
+    <select id="findByIdPro" parameterType="integer" resultMap="findByIdProMap">
+        select id,
+               name,
+               code,
+               helpCode,
+               sex,
+               age,
+               price,
+               remark,
+               attention,
+               img
+        from t_setmeal
+        where id = #{id}
+    </select>
+    <!--    <update id="update" parameterType="com.ydl.pojo.CheckGroup">-->
+    <!--        update t_checkgroup-->
+    <!--        <set>-->
+    <!--            <if test="code != null">-->
+    <!--                code = #{code},-->
+    <!--            </if>-->
+    <!--            <if test="name != null">-->
+    <!--                name = #{name},-->
+    <!--            </if>-->
+    <!--            <if test="sex != null">-->
+    <!--                sex = #{sex},-->
+    <!--            </if>-->
+    <!--            <if test="helpCode != null">-->
+    <!--                helpCode = #{helpCode},-->
+    <!--            </if>-->
+    <!--            <if test="remark != null">-->
+    <!--                remark = #{remark},-->
+    <!--            </if>-->
+    <!--            <if test="attention != null">-->
+    <!--                attention = #{attention},-->
+    <!--            </if>-->
+    <!--        </set>-->
+    <!--        where id = #{id}-->
+    <!--    </update>-->
+    <!--    <delete id="deleteAssociation" parameterType="integer">-->
+    <!--        delete-->
+    <!--        from t_checkgroup_checkitem-->
+    <!--        where checkgroup_id =-->
+    <!--              #{id}-->
+    <!--    </delete>-->
+    <!--    <delete id="delete" parameterType="integer">-->
+    <!--        delete-->
+    <!--        from t_checkgroup-->
+    <!--        where id = #{id}-->
+    <!--    </delete>-->
+    <!--    &lt;!&ndash;分页查找&ndash;&gt;-->
+    <!--    <select id="queryByConditionPage" parameterType="string" resultType="com.ydl.pojo.CheckGroup">-->
+    <!--        select id,code, name, helpCode,sex, remark, attention from t_checkgroup-->
+    <!--        <if test="queryString != null and queryString.length > 0">-->
+    <!--            where code like concat('%',#{queryString},'%') or name like concat('%',#{queryString},'%')-->
+    <!--        </if>-->
+    <!--    </select>-->
+
+    <!--    <select id="findById" resultType="com.ydl.pojo.CheckGroup" parameterType="integer">-->
+    <!--        select id, code, name, helpCode, sex, remark, attention-->
+    <!--        from t_checkgroup-->
+    <!--        where id = #{id}-->
+    <!--    </select>-->
+    <!--    <select id="findCheckItemIdsByCheckGroupId" parameterType="integer" resultType="integer">-->
+    <!--        select checkitem_id-->
+    <!--        from t_checkgroup_checkitem-->
+    <!--        where checkgroup_id = #{id}-->
+    <!--    </select>-->
+
+    <!--    <select id="findAll" resultType="com.ydl.pojo.CheckGroup">-->
+    <!--        select id, code, name, helpCode, sex, remark, attention-->
+    <!--        from t_checkgroup-->
+    <!--    </select>-->
+</mapper>

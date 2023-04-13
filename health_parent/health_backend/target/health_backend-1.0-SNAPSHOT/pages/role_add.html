@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>传智健康</title>
+    <meta name="description" content="传智健康">
+    <meta name="keywords" content="传智健康">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="hold-transition">
+
+<div id="app">
+    <el-table size="small" current-row-key="id" :data="list" stripe highlight-current-row>
+        <el-table-column type="index" align="center" label="序号"></el-table-column>
+        <el-table-column prop="name" label="角色名" align="center"></el-table-column>
+        <el-table-column prop="keyword" label="角色关键词" align="center"></el-table-column>
+        <el-table-column prop="description" label="角色描述" align="center"></el-table-column>
+        <el-table-column label="操作" align="center">
+            <template slot-scope="scope">
+                <el-button type="primary" size="mini" @click="handleUpdate(scope.row.id)">添加权限</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+
+    <div class="add-form">
+        <el-dialog title="添加权限" :visible.sync="dialogFormVisible4Edit">
+            <el-table size="small" current-row-key="id" :data="pList" stripe highlight-current-row>
+                <el-table-column type="index" align="center" label="序号"></el-table-column>
+                <el-table-column prop="name" label="权限名" align="center"></el-table-column>
+                <el-table-column prop="keyword" label="权限关键词" align="center"></el-table-column>
+                <el-table-column prop="description" label="权限描述" align="center"></el-table-column>
+                <el-table-column label="选择" align="center">
+                    <template slot-scope="scope">
+                        <input :id="id" type="checkbox" v-model="pId" :value="scope.row.id">
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible4Edit=false">取消</el-button>
+                <el-button type="primary" @click="handleAdd()">提交</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</div>
+
+</body>
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            list: [],
+            formData: [],
+            dialogFormVisible: false,
+            dialogFormVisible4Edit: false,
+            pList: [],
+            pId: [],
+            roleId: []
+        },
+        mounted() {
+            axios.get('/role/findAll.do').then((res) => {
+                    this.list = res.data.data
+                    console.log(res)
+                }
+            )
+        },
+        methods: {
+            handleUpdate(id) {
+                //弹出编辑窗口
+                this.dialogFormVisible4Edit = true;
+                this.roleId = id
+                axios.get('/permission/findByOtherPermission.do?roleId=' + id).then(res => {
+                    if (res.data.flag) {
+                        //进行回显，基于VUE的数据绑定实现
+                        this.pList = res.data.data.pList
+                    } else {
+                        //查询失败，弹出提示
+                        this.$message.error(res.data.message);
+                    }
+                });
+            },
+            handleAdd() {
+
+                axios.get('/permission/save.do?roleId=' + this.roleId + '&pId=' + this.pId).then(res => {
+                    if (res.data.flag) {
+                        //进行回显，基于VUE的数据绑定实现
+                        this.dialogFormVisible4Edit = false;
+                    } else {
+                        //查询失败，弹出提示
+                        this.$message.error(res.data.message);
+                    }
+                });
+            }
+        }
+    })
+</script>
+</html>

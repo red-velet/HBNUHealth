@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>传智健康</title>
+    <meta name="description" content="传智健康">
+    <meta name="keywords" content="传智健康">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="hold-transition">
+
+<div id="app">
+    <div class="filter-container">
+        <el-input placeholder="权限名" style="width: 200px;" class="filter-item"
+                  v-model="pagination.queryString"></el-input>
+        <el-button @click="search()" class="dalfBut">查询</el-button>
+        <el-button type="primary" class="butT" @click="handleAdd()">新建权限</el-button>
+    </div>
+    <el-table size="small" current-row-key="id" :data="list" stripe highlight-current-row>
+        <el-table-column type="index" align="center" label="序号"></el-table-column>
+        <el-table-column prop="name" label="权限名" align="center"></el-table-column>
+        <el-table-column prop="keyword" label="权限关键词" align="center"></el-table-column>
+        <el-table-column prop="description" label="权限描述" align="center"></el-table-column>
+        <!--        <el-table-column label="操作" align="center">-->
+        <!--            <template slot-scope="scope">-->
+        <!--                <el-button type="primary" size="mini" @click="handleUpdate(scope.row.id)">添加权限</el-button>-->
+        <!--            </template>-->
+        <!--        </el-table-column>-->
+    </el-table>
+    <div class="pagination-container">
+        <el-pagination
+                class="pagiantion"
+                @current-change="handleCurrentChange"
+                :current-page="pagination.currentPage"
+                :page-size="pagination.pageSize"
+                layout="total, prev, pager, next, jumper"
+                :total="pagination.total">
+        </el-pagination>
+    </div>
+
+    <div class="add-form">
+        <el-dialog title="新建权限" :visible.sync="dialogFormVisible">
+            <el-form ref="dataAddForm" :model="permission" label-position="right" label-width="100px">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="权限名" prop="name">
+                            <el-input v-model="permission.name"/>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="权限键词" prop="keyword">
+                            <el-input v-model="permission.keyword"/>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="权限描述">
+                            <el-input v-model="permission.description"/>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="addPermission()">确定</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</div>
+
+</body>
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            pagination: {//分页相关模型数据
+                currentPage: 1,//当前页码
+                pageSize: 10,//每页显示的记录数
+                total: 0,//总记录数
+                queryString: null//查询条件
+            },
+            list: [],
+            permission: {},
+            dialogFormVisible: false
+        },
+        mounted() {
+            this.findPage();
+        },
+        methods: {
+            search() {
+                this.pagination.currentPage = 1;
+                this.findPage();
+            },
+            findPage() {
+                //发送ajax请求，提交分页相关请求参数（页码、每页显示记录数、查询条件）
+                let param = {
+                    currentPage: this.pagination.currentPage,
+                    pageSize: this.pagination.pageSize,
+                    queryString: this.pagination.queryString
+                };
+                axios.post("/permission/findByName.do", param).then((res) => {
+                    //解析Controller响应回的数据，为模型数据赋值
+                    this.list = res.data.rows;//当前页展示的数据集合
+                    this.pagination.total = res.data.total;//总数据量
+                });
+            },
+            handleCurrentChange(currentPage) {
+                //为模型数据赋值（当前页面）
+                this.pagination.currentPage = currentPage;
+                this.findPage();
+            },
+            handleAdd() {
+                this.dialogFormVisible = true;
+            },
+            addPermission() {
+                axios.post('/permission/add.do', this.permission).then(res => {
+                    this.permission = {};
+                    this.dialogFormVisible = false;
+
+                    this.findPage();
+                });
+            }
+        }
+    })
+</script>
+</html>

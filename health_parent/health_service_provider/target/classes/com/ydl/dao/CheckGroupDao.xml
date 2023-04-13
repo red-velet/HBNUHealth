@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.CheckGroupDao">
+    <resultMap id="baseCheckGroupResultMap" type="com.ydl.pojo.CheckGroup">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="helpCode" column="helpCode"/>
+        <result property="sex" column="sex"/>
+        <result property="remark" column="remark"/>
+        <result property="attention" column="attention"/>
+    </resultMap>
+
+    <resultMap id="findCheckGroupBySetMealIdMap"
+               type="com.ydl.pojo.CheckGroup"
+               extends="baseCheckGroupResultMap">
+        <collection property="checkItems"
+                    column="id"
+                    ofType="com.ydl.pojo.CheckItem"
+                    select="com.ydl.dao.CheckItemDao.findCheckItemByCheckGroupId"/>
+    </resultMap>
+
+
+    <!--向t_checkgroup表添加一条数据-->
+    <insert id="add" parameterType="com.ydl.pojo.CheckGroup">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_checkgroup(code, name, sex, helpCode, remark, attention)
+        values (#{code}, #{name},#{sex}, #{helpCode}, #{remark}, #{attention})
+    </insert>
+
+    <insert id="setCheckGroupAndCheckItem" parameterType="map">
+        insert into t_checkgroup_checkitem(checkgroup_id, checkitem_id)
+        values (#{checkgroupid}, #{checkitemid})
+    </insert>
+    <update id="update" parameterType="com.ydl.pojo.CheckGroup">
+        update t_checkgroup
+        <set>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteAssociation" parameterType="integer">
+        delete
+        from t_checkgroup_checkitem
+        where checkgroup_id =
+              #{id}
+    </delete>
+    <delete id="delete" parameterType="integer">
+        delete
+        from t_checkgroup
+        where id = #{id}
+    </delete>
+    <!--分页查找-->
+    <select id="queryByConditionPage" parameterType="string" resultType="com.ydl.pojo.CheckGroup">
+        select id,code, name, helpCode,sex, remark, attention from t_checkgroup
+        <if test="queryString != null and queryString.length > 0">
+            where code like concat('%',#{queryString},'%') or name like concat('%',#{queryString},'%')
+        </if>
+    </select>
+
+    <select id="findById" resultType="com.ydl.pojo.CheckGroup" parameterType="integer">
+        select id, code, name, helpCode, sex, remark, attention
+        from t_checkgroup
+        where id = #{id}
+    </select>
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="integer" resultType="integer">
+        select checkitem_id
+        from t_checkgroup_checkitem
+        where checkgroup_id = #{id}
+    </select>
+
+    <select id="findAll" resultType="com.ydl.pojo.CheckGroup">
+        select id, code, name, helpCode, sex, remark, attention
+        from t_checkgroup
+    </select>
+
+    <select id="findCheckGroupBySetMealId" parameterType="int" resultMap="findCheckGroupBySetMealIdMap">
+        select id, code, name, helpCode, sex, remark, attention
+        from t_checkgroup
+        where id in (
+            select checkgroup_id
+            from t_setmeal_checkgroup
+            where setmeal_id = #{id}
+        )
+    </select>
+</mapper>

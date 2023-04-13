@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.MemberDao">
+    <!--新增-->
+    <insert id="add" parameterType="com.ydl.pojo.Member">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_member(fileNumber,name,idCard,phoneNumber,regTime)
+        values
+        (#{fileNumber},#{name},#{idCard},#{phoneNumber},#{regTime})
+    </insert>
+
+
+    <select id="findByTelephone" resultType="com.ydl.pojo.Member" parameterType="string">
+        select id,
+               fileNumber,
+               name,
+               sex,
+               idCard,
+               phoneNumber,
+               regTime,
+               password,
+               email,
+               birthday,
+               remark
+        from t_member
+        where phoneNumber = #{telePhone}
+    </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydl.dao.RoleDao">
+
+    <select id="findByUserId" parameterType="integer" resultType="com.ydl.pojo.Role">
+        select id, name, keyword, description
+        from t_role
+        where id in (
+            select role_id
+            from t_user_role
+            where user_id = #{id}
+        )
+    </select>
+    <select id="findAll" resultType="com.ydl.pojo.Role">
+        select id, name, keyword, description
+        from t_role
+    </select>
+</mapper>

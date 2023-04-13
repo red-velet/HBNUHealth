@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>传智健康</title>
+    <meta name="description" content="传智健康">
+    <meta name="keywords" content="传智健康">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="hold-transition">
+
+<div id="app">
+    <div class="filter-container">
+        <el-input placeholder="用户名" style="width: 200px;" class="filter-item"
+                  v-model="pagination.queryString"></el-input>
+        <el-button @click="search()" class="dalfBut">查询</el-button>
+        <el-button type="primary" class="butT" @click="handleCreate()">新建用户</el-button>
+    </div>
+    <el-table size="small" current-row-key="id" :data="list" stripe highlight-current-row>
+        <el-table-column type="index" align="center" label="序号"></el-table-column>
+        <el-table-column prop="username" label="用户名" align="center"></el-table-column>
+        <el-table-column prop="gender" label="性别" align="center"></el-table-column>
+        <el-table-column prop="birthday" label="出生日期" align="center"></el-table-column>
+        <el-table-column prop="telephone" label="电话号码" align="center"></el-table-column>
+        <el-table-column prop="station" label="状态" align="center"></el-table-column>
+        <el-table-column prop="remark" label="备注" align="center"></el-table-column>
+        <el-table-column label="操作" align="center">
+            <template slot-scope="scope">
+                <el-button type="primary" size="mini" @click="handleUpdate(scope.row.id)">添加角色</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination
+            class="pagiantion"
+            @current-change="handleCurrentChange"
+            :current-page="pagination.currentPage"
+            :page-size="pagination.pageSize"
+            layout="total, prev, pager, next, jumper"
+            :total="pagination.total">
+    </el-pagination>
+
+    <!--添加角色表单-->
+    <div class="add-form">
+        <el-dialog title="添加角色" :visible.sync="dialogFormVisible4Edit">
+            <el-table size="small" current-row-key="id" :data="roleList" stripe highlight-current-row>
+                <el-table-column type="index" align="center" label="序号"></el-table-column>
+                <el-table-column prop="name" label="角色名" align="center"></el-table-column>
+                <el-table-column prop="keyword" label="角色关键词" align="center"></el-table-column>
+                <el-table-column label="选择" align="center">
+                    <template slot-scope="scope">
+                        <input :id="id" type="checkbox" v-model="roleIds" :value="scope.row.id">
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible4Edit=false">取消</el-button>
+                <el-button type="primary" @click="handleAdd()">提交</el-button>
+            </div>
+        </el-dialog>
+    </div>
+
+    <!--添加用户表单-->
+    <div class="add-form">
+        <el-dialog title="新建用户" :visible.sync="dialogFormVisible">
+            <el-form ref="dataAddForm" :model="user" label-position="right" label-width="100px">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="用户名" prop="username">
+                            <el-input v-model="user.username"/>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="密码" prop="password">
+                            <el-input type="password" v-model="user.password"/>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="性别">
+                            <el-radio-group v-model="user.gender" prop="gender" size="small">
+                                <el-radio label="男" value="男">男</el-radio>
+                                <el-radio label="女" value="女">女</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="出生日期">
+                            <template>
+                                <div class="block">
+                                    <el-date-picker
+                                            v-model="user.birthday"
+                                            type="date"
+                                            placeholder="选择日期">
+                                    </el-date-picker>
+                                </div>
+                            </template>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="手机号">
+                            <el-input v-model="user.telephone"/>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="状态">
+                            <el-select v-model="user.station">
+                                <el-option label="开启" value="0"></el-option>
+                                <el-option label="关闭" value="1"></el-option>
+                            </el-select>
+
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="备注">
+                            <el-input v-model="user.remark" type="textarea"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="addUser()">确定</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</div>
+
+
+</body>
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            pagination: {//分页相关模型数据
+                currentPage: 1,//当前页码
+                pageSize: 10,//每页显示的记录数
+                total: 0,//总记录数
+                queryString: null//查询条件
+            },
+            list: [],
+            user: {},
+            dialogFormVisible: false,
+            dialogFormVisible4Edit: false,
+            roleList: [],
+            roleIds: [],
+            username: []
+        },
+        mounted() {
+            this.findPage();
+        },
+        methods: {
+            handleUpdate(id) {
+                //弹出编辑窗口
+                this.dialogFormVisible4Edit = true;
+                this.userId = id
+                axios.get('/role/findByOtherRole.do?userId=' + id).then(res => {
+                    if (res.data.flag) {
+                        //进行回显，基于VUE的数据绑定实现
+                        this.roleList = res.data.data.roleList
+                    } else {
+                        //查询失败，弹出提示
+                        this.$message.error(res.data.message);
+                    }
+                });
+            },
+
+            handleCreate() {
+                this.dialogFormVisible = true;
+                // this.user.gender='男';
+                // this.user.station='开启';
+
+
+            },
+            addUser() {
+                axios.post('/user/save.do', this.user).then(res => {
+                    if (res.data.flag) {
+                        //进行回显，基于VUE的数据绑定实现
+                        this.dialogFormVisible = false;
+                        this.user = [];
+                    } else {
+                        //查询失败，弹出提示
+                        this.$message.error(res.data.message);
+                    }
+                }).finally(() => {
+                    this.findPage();
+                });
+            },
+            handleAdd() {
+                axios.get('/role/save.do?roleIds=' + this.roleIds + '&userId=' + this.userId).then(res => {
+                    if (res.data.flag) {
+                        //进行回显，基于VUE的数据绑定实现
+                        this.dialogFormVisible4Edit = false;
+                        this.roleIds = [];
+                    } else {
+                        //查询失败，弹出提示
+                        this.$message.error(res.data.message);
+                    }
+                });
+            },
+            search() {
+                this.pagination.currentPage = 1;
+                this.findPage();
+            },
+            findPage() {
+                //发送ajax请求，提交分页相关请求参数（页码、每页显示记录数、查询条件）
+                let param = {
+                    currentPage: this.pagination.currentPage,
+                    pageSize: this.pagination.pageSize,
+                    queryString: this.pagination.queryString
+                };
+                axios.post("/user/findByCase.do", param).then((res) => {
+                    this.list = res.data.rows;
+                    this.pagination.total = res.data.total;
+                });
+            },
+            handleCurrentChange(currentPage) {
+                //为模型数据赋值（当前页面）
+                this.pagination.currentPage = currentPage;
+                this.findPage();
+            },
+        }
+    })
+</script>
+</html>
